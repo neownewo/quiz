@@ -90,6 +90,10 @@ function calc() {
   }
 
 
+  /* ================================
+     先算原始人格分數 0 ~ 100
+     ================================ */
+
   const pct = {};
 
   Object.keys(dims).forEach(k => {
@@ -103,35 +107,270 @@ function calc() {
   });
 
 
-  /* ==========================================
-     墨昕適配度
-     只送後台，不給填答者看
-     ========================================== */
+  /* ================================
+     墨昕適配度 V2
+     ================================ */
+
+  const clamp = (value, min = 0, max = 100) =>
+    Math.max(min, Math.min(max, value));
+
+
+  /*
+    1. 區間型
+
+    適合用於聊天：
+    不是越高越好，
+    而是落在舒服區間最好。
+  */
+
+  function rangeFit(
+    value,
+    idealMin,
+    idealMax,
+    penaltyPerPoint = 2
+  ) {
+
+    if (
+      value >= idealMin &&
+      value <= idealMax
+    ) {
+      return 100;
+    }
+
+    if (value < idealMin) {
+      return clamp(
+        100 -
+        (idealMin - value) *
+        penaltyPerPoint
+      );
+    }
+
+    return clamp(
+      100 -
+      (value - idealMax) *
+      penaltyPerPoint
+    );
+  }
+
+
+  /*
+    2. 門檻型
+
+    適合：
+    主動、協作、情緒成熟、
+    細節、安全感、推進
+
+    達標就不再要求更高。
+  */
+
+  function thresholdFit(
+    value,
+    target,
+    penaltyPerPoint = 2
+  ) {
+
+    if (value >= target) {
+      return 100;
+    }
+
+    return clamp(
+      100 -
+      (target - value) *
+      penaltyPerPoint
+    );
+  }
+
+
+  /*
+    3. 風險型
+
+    PM 風險越低越好。
+
+    0~30：理想
+    31~50：小幅扣分
+    51~70：開始明顯危險
+    71+：墨昕可能會變 PM
+  */
+
+  function riskFit(value) {
+
+    if (value <= 30) {
+      return 100;
+    }
+
+    if (value <= 50) {
+      return clamp(
+        100 -
+        (value - 30) * 1.5
+      );
+    }
+
+    if (value <= 70) {
+      return clamp(
+        70 -
+        (value - 50) * 2
+      );
+    }
+
+    return clamp(
+      30 -
+      (value - 70) * 2
+    );
+  }
+
+
+  /* ================================
+     各維度與墨昕的適配分
+     ================================ */
+
+
+  /*
+    墨昕聊天原始值約 80。
+
+    70~90 都視為非常舒服。
+    太低可能沒內容；
+    太高可能變成聊天壓力。
+  */
+
+  const chatFit =
+    rangeFit(
+      pct.chat,
+      70,
+      90,
+      1.8
+    );
+
+
+  /*
+    主動：
+    不需要霸總，
+    但至少不能每一步都等墨昕推。
+  */
+
+  const initiativeFit =
+    thresholdFit(
+      pct.initiative,
+      70,
+      2
+    );
+
+
+  /*
+    協作：
+    墨昕自己是 92，
+    因此很在乎共同解題能力。
+  */
+
+  const collabFit =
+    thresholdFit(
+      pct.collab,
+      75,
+      2.4
+    );
+
+
+  /*
+    情緒成熟：
+    不需要完美，
+    但不能一直需要墨昕收拾。
+  */
+
+  const emotionFit =
+    thresholdFit(
+      pct.emotion,
+      75,
+      2.2
+    );
+
+
+  /*
+    細節與投入：
+    記得對方說過什麼、
+    願意理解對方的世界。
+  */
+
+  const attentionFit =
+    thresholdFit(
+      pct.attention,
+      70,
+      2
+    );
+
+
+  /*
+    安全感：
+    墨昕本人 97，
+    很難長期承受高頻 reassurance。
+  */
+
+  const securityFit =
+    thresholdFit(
+      pct.security,
+      75,
+      2.4
+    );
+
+
+  /*
+    關係推進：
+    慢熱沒關係，
+    但不能永遠停在聊天室。
+  */
+
+  const progressFit =
+    thresholdFit(
+      pct.progress,
+      55,
+      1.8
+    );
+
+
+  /*
+    PM 風險
+  */
+
+  const mentalFit =
+    riskFit(
+      pct.mental
+    );
+
+
+  /* ================================
+     最終墨昕適配度
+
+     權重依妳目前最在意的東西配置
+     ================================ */
 
   const compatibility = Math.round(
-      pct.chat       * 0.20
-    + pct.initiative * 0.16
-    + pct.collab     * 0.20
-    + pct.emotion    * 0.16
-    + pct.attention  * 0.10
-    + pct.security   * 0.10
-    + pct.progress   * 0.08
+
+      chatFit       * 0.18
+
+    + initiativeFit * 0.14
+
+    + collabFit     * 0.20
+
+    + emotionFit    * 0.16
+
+    + attentionFit  * 0.10
+
+    + securityFit   * 0.10
+
+    + progressFit   * 0.06
+
+    + mentalFit     * 0.06
+
   );
 
 
-  /* ==========================================
-     表面上的貓咪人格
-     ========================================== */
+  /* ================================
+     貓咪人格
+     前台顯示用
+     ================================ */
 
   let type;
   let desc;
   let catEmoji;
 
-
-  /*
-    三花貓
-    擅長處理事情、會一起規劃
-  */
 
   if (
     pct.collab >= 75 &&
@@ -149,11 +388,6 @@ function calc() {
   }
 
 
-  /*
-    橘貓
-    分享慾與互動感很高
-  */
-
   else if (
     pct.chat >= 78 &&
     pct.emotion >= 70
@@ -169,11 +403,6 @@ function calc() {
       "你的世界不是安安靜靜的那種，是會突然跑過來拍人一下的那種。";
   }
 
-
-  /*
-    黑貓
-    慢熱、觀察、獨立
-  */
 
   else if (
     pct.security >= 75 &&
@@ -191,11 +420,6 @@ function calc() {
   }
 
 
-  /*
-    賓士貓
-    細節觀察能力高
-  */
-
   else if (
     pct.attention >= 78 &&
     pct.chat >= 60
@@ -212,11 +436,6 @@ function calc() {
   }
 
 
-  /*
-    布偶貓
-    情緒成熟、陪伴型
-  */
-
   else if (
     pct.emotion >= 75 &&
     pct.collab >= 65
@@ -232,11 +451,6 @@ function calc() {
       "屬於待在旁邊就會讓人慢慢放鬆的類型。";
   }
 
-
-  /*
-    虎斑貓
-    比較平均、自在
-  */
 
   else {
 
@@ -257,7 +471,23 @@ function calc() {
     compatibility,
     type,
     desc,
-    catEmoji
+    catEmoji,
+
+    /*
+      這些只方便未來除錯／分析，
+      前台不用顯示。
+    */
+
+    compatibilityDetail: {
+      chatFit,
+      initiativeFit,
+      collabFit,
+      emotionFit,
+      attentionFit,
+      securityFit,
+      progressFit,
+      mentalFit
+    }
   };
 }
 
