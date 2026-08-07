@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/public/index.html"
+      "destination": "/index.html"
     },
     {
       "source": "/admin",
-      "destination": "/public/admin.html"
+      "destination": "/admin.html"
     },
     {
       "source": "/style.css",
