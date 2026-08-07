@@ -1,0 +1,6 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>墨昕後台</title><link rel="stylesheet" href="/style.css"></head>
+<body><main class="wrap"><div class="topnav"><a href="/">← 回測驗</a><b>墨昕秘密面試後台 🌝</b></div>
+<section id="login" class="hero"><span class="pill">Admin</span><h1 style="font-size:30px">查看完整作答資料</h1><p>輸入妳自己在 Vercel 設定的管理密碼。</p><div class="grid2" style="grid-template-columns:1fr auto"><input id="key" type="password" placeholder="管理密碼"><button class="btn primary" id="loginBtn">進入</button></div></section>
+<section id="dash" class="hidden"><div class="kpis" id="kpis"></div><div class="panel"><div class="actions"><button class="btn ghost" id="refresh">重新整理</button></div><div class="tablewrap"><table><thead><tr><th>時間</th><th>暱稱</th><th>人格</th><th>相容度</th><th>聊天</th><th>主動</th><th>協作</th><th>情緒</th><th>安全感</th><th>PM風險</th><th>答案</th></tr></thead><tbody id="tbody"></tbody></table></div></div></section>
+</main><div id="modal" class="modal"><div class="modal-card"><div class="topnav"><h3>完整作答</h3><button class="btn ghost" onclick="closeModal()">關閉</button></div><div id="modalBody"></div></div></div>
+<script src="/questions.js"></script><script src="/admin.js"></script></body></html>

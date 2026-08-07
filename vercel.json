@@ -1,0 +1,28 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/public/index.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/public/admin.html"
+    },
+    {
+      "source": "/style.css",
+      "destination": "/public/style.css"
+    },
+    {
+      "source": "/quiz.js",
+      "destination": "/public/quiz.js"
+    },
+    {
+      "source": "/admin.js",
+      "destination": "/public/admin.js"
+    },
+    {
+      "source": "/questions.js",
+      "destination": "/public/questions.js"
+    }
+  ]
+}
