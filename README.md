@@ -37,3 +37,6 @@ Supabase 專案設定中取得：
 - 前台送出結果 → `/api/submit` → Serverless API → Supabase。
 - 後台讀資料 → `/api/admin`，需要 `ADMIN_KEY`。
 - Supabase 表有啟用 RLS，且沒有開 anon policy，因此匿名前端不能直接讀取表格。
+
+
+新增：`/cat-sync/` 為獨立多人遊戲。請見 `cat-sync/README.md`。
