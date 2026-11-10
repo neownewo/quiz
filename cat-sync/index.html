@@ -15,99 +15,29 @@ const BANK=[
 ['scenario','如果群組全員一起出國，第一個會發生什麼事？'],['scenario','大家突然被關在同一間密室，最先出現的物品是？'],['scenario','群組要開一間店，你覺得會賣什麼？'],['scenario','如果大家一起拍戀愛實境節目，節目名稱第一個詞是？'],['scenario','大家突然要辦一場茶會，最先準備什麼？'],['scenario','群組有人中樂透，第一個會買什麼？'],['scenario','如果群組變成遊戲公會，公會名稱會有什麼詞？'],['scenario','大家一起去逛動漫展，最先衝去哪裡？'],['scenario','如果大家一起拍電影，會是什麼類型？'],['scenario','大家突然要選吉祥物，你第一個想到什麼？'],['scenario','如果群組出現一隻貓，大家會給牠取什麼名字？'],['scenario','全員去唱歌，第一首歌會是什麼？'],['scenario','大家一起去夜市，第一個買什麼？'],['scenario','如果群組成為一間公司，最重要的部門叫什麼？'],['scenario','如果大家都穿越到古代，第一個會遇到什麼？'],['scenario','如果明天有線下聚會，最可能帶什麼周邊？'],['scenario','如果有人突然傳了 30 張照片，大家第一個會回什麼？'],['scenario','群組要設一個共同暗號，你第一個想到什麼？'],['scenario','如果群組有一個專屬節日，會慶祝什麼？'],['scenario','大家一起玩真心話大冒險，第一個會出現什麼詞？']
 ];
 const $=id=>document.getElementById(id),show=(id,on=true)=>$(id).classList.toggle('hide',!on);
-let totalRounds=10,deadline=0,questionOptions=[],timerHandle=null;
+let totalRounds=10,deadline=0,questionOptions=[],timerHandle=null,questionId=-1,questionDigest='';
 let client,channel,room='',me='',host=false,hostId='',myId=crypto.randomUUID(),members={},round=0,question='',answers={},revealed=false,history=[],used=[],currentVersion=0,connected=false;
 const notice=(msg,bad=false)=>{$('toast').textContent=msg;$('toast').className=bad?'error':'success'};
 const clean=s=>String(s||'').trim().slice(0,40),roomRegex=/^[A-Z0-9]{8}$/;
-const MCQ=[
-['有人說「我要偷偷跟你們說」，你會？',['爆米花先拿好','先問有沒有懶人包','光速搬板凳','假裝在忙其實偷看']],
-['群組突然安靜五分鐘，大家在？',['偷偷開小群','認真上班（稀有）','一起睡著','正在打字寫論文']],
-['有人打錯字，群組會？',['截圖永久保存','直接歪樓','幫他改成更錯','全員裝沒看到']],
-['有人說「我有兩件事要說」，你會？',['先聽第二件','拿出爆米花','喊等等我去尿尿','叫他先做簡報']],
-['有人說「我先去尿尿」，你的反應？',['准奏','請攜帶手機','這也要報備嗎','先把瓜留下']],
-['今天的群組瓜太多，應該？',['成立瓜農合作社','爆米花吃到飽','申請八卦年假','開一間瓜田直播台']],
-['聽到「賽博抱抱」，你想到？',['雲端擁抱','網路線纏在一起','電子佛祖保佑','抱一下但先別碰我']],
-['如果群組玩狼人殺，誰最可疑？',['最安靜的','一直喊我是好人的','主動帶風向的','第一個去尿尿的']],
-['群組出現「阿嬤」兩字，你會？',['先確認是哪位阿嬤','端茶請安','拿出祖傳寶物','直接呼叫救護車']],
-['大家要改群組名稱，最適合？',['婆婆酒精研究所','貓貓吃瓜股份有限公司','衰小女團宇宙','精神狀態良好協會']],
-['有人說「我快發瘋」，你會？',['一起瘋比較快','發送賽博抱抱','問今天又是哪齣','先幫他點外送']],
-['腦袋超人的超能力是？',['秒懂八卦關係圖','截圖自動分類','預測下一個瓜','上班還能回訊息']],
-['軍師上線第一件事？',['畫人物關係圖','開戰情會議','先吃點心','問有沒有錄音']],
-['看到「我不明白」，你會接？',['我也不明白','懶人包在哪','先不要明白','請播放前情提要']],
-['自我認同是一隻吉伊，最需要？',['毛茸茸的尊重','一張身分證','合法的窩','專屬貼圖']],
-['有人在群組突然喊「來」，你會？',['坐好等故事','立刻喊到','先問有沒有瓜','默默關掉通知']],
-['看到「好好笑」，你的反應？',['到底笑什麼啦','哈哈哈哈哈哈','先截圖再說','這個不能外流']],
-['「簡單點」的下一句最適合？',['說話的方式簡單點','事情怎麼又複雜了','先給我流程圖','可以直接懶人包嗎']],
-['大家一起去茶會，第一個帶什麼？',['娃娃軍團','滿滿的痛包','爆米花','可疑的行李箱']],
-['看到秦徹，你會想到？',['霸總氣場','娃娃排排站','茶會燈箱','錢包開始顫抖']],
-['看到祁煜，你會想到？',['魚魚','漂亮的臉','卡池又來了','我的錢包呢']],
-['看到敖尹，你會想到？',['小狼','打卡活動','一整面燈箱','又要開始討論了']],
-['看到沈星回，你會想到？',['光獵','娃娃','睡覺','甜甜的蛋糕']],
-['看到夏以晝，你會想到？',['哥哥','又要抽卡','命運的安排','我先哭一下']],
-['看到黎深，你會想到？',['醫生','雪','冷靜的吐槽','這題怎麼那麼難']],
-['痛包最重要的配備？',['娃娃','徽章','肩膀的耐力','永遠不夠的預算']],
-['看到燈箱，你會想到？',['拍照打卡','設計稿改到瘋','蕾絲到底哪來的','大家先別吵']],
-['看到蕾絲，你會想到？',['夢幻少女風','燈箱','這真的搭嗎','我只看臉']],
-['看到古風，你會想到？',['帥哥','仙氣飄飄','一秒穿越','好想拍照']],
-['看到扭蛋，你會想到？',['再轉一次','隱藏款在哪','錢包見底','重複三個']],
-['看到抓寶，你會想到？',['到處打卡','我先吃飯','隊友救命','最後一關在哪']],
-['看到 SABON，你會想到？',['香香的禮盒','禮物太貴了吧','洗完澡香噴噴','這題有故事']],
-['看到刈包，你會想到？',['花生粉','香菜加爆','瓜瓜','先來一份']],
-['看到面相，你會想到？',['襪子神算','看一眼就懂','命理節目','先別看我']],
-['看到飛雷神，你會想到？',['瞬間消失','我先去忙','忍者出沒','傳送到瓜田']],
-['大家一起出國，第一個出狀況的是？',['迷路','行李爆炸','集合遲到','購物超時']],
-['大家一起被關進密室，第一個做什麼？',['先拍團照','找出口','開始互相懷疑','叫外送']],
-['群組開一間店，賣什麼最賺？',['爆米花','娃娃周邊','瓜田入場券','賽博抱抱']],
-['群組拍戀愛實境節目，節目名稱？',['戀愛還是吃瓜','心動警報失靈','誰又在情勒','單身也很忙']],
-['有人中樂透，第一筆錢花在哪？',['抽卡','買痛包','包場茶會','請大家吃飯']],
-['群組成立公會，職業分配？',['八卦情報員','爆米花補給官','娃娃守護者','專業吐槽師']],
-['動漫展第一站去哪？',['娃娃攤','周邊區','拍照牆','先找廁所']],
-['群組一起拍電影，類型會是？',['懸疑推理','荒謬喜劇','宮鬥大戲','紀錄片：瓜的一生']],
-['群組吉祥物應該是？',['貓貓','吉伊','小狼','一顆爆米花']],
-['群組撿到一隻貓，要取名？',['瓜瓜','牛牛','阿嬤','爆米花']],
-['全員唱 KTV，最先發生什麼？',['有人搶麥','全員大合唱','點了歌沒人唱','開始聊八卦']],
-['一起逛夜市，先買什麼？',['刈包','雞排','珍珠奶茶','先買爆米花']],
-['群組公司最重要的部門？',['吃瓜情報部','情緒支援部','娃娃採購部','危機公關部']],
-['全員穿越古代，第一件事？',['開茶會','組建軍師團','找帥哥','先研究怎麼回家']],
-['線下聚會最可能帶什麼？',['娃娃','痛包','相機','裝滿瓜的腦袋']],
-['有人傳 30 張照片，你會回？',['我先看一下','太多了吧！','全部存起來','請做成懶人包']],
-['群組專屬暗號最適合？',['瓜熟了','賽博抱抱','腦袋超人集合','今天也活著']],
-['群組專屬節日要慶祝？',['吃瓜節','娃娃生日','全員不崩潰日','爆米花感恩節']],
-['真心話大冒險第一題？',['你最近在暈誰','你最常偷看誰限動','你買了多少周邊','你是不是有小群']],
-['大家突然全員變成動物？',['貓貓','小狼','吉伊','只會吃瓜的水豚']],
-['群組要參加運動會，最強項目？',['八卦接力','手機打字競速','娃娃負重賽','爆米花馬拉松']],
-['群組要出一本書，書名會是？',['那些年我們吃過的瓜','今天也沒有要吵架','群組生存指南','我只是想看帥哥']],
-['一個人說「我沒事」，通常是？',['真的沒事','等一下就有事','正在打長文','先送抱抱']],
-['大家一起做手作，第一個問題？',['材料買太多','膠水不夠','尺寸量錯','做一半開始聊天']],
-['抽卡歪掉的第一反應？',['再十抽','先冷靜','截圖給大家','錢包表示抗議']],
-['有人說「最後一次買」，你相信？',['完全不信','這次是真的吧','先幫他記錄','下週再問']],
-['如果大家一起開直播，內容？',['現場吃瓜','娃娃開箱','互相吐槽','深夜談心']],
-['大家約見面最常出現？',['等我一下','我快到了','我迷路了','先幫我點餐']],
-['群組出現重大消息，誰先到？',['爆米花','軍師','截圖小隊','剛起床的人']],
-['最適合群組的口號？',['有瓜一起吃','今天也很正常','娃娃比人重要','禁止空腹八卦']],
-['假如有時光機，你會？',['回去阻止手滑抽卡','再買一次周邊','重看經典對話','直接去未來看瓜']],
-['大家開一家咖啡店，招牌飲品？',['吃瓜拿鐵','賽博抱抱奶茶','小狼特調','阿嬤的秘密']],
-['群組如果變成 RPG，最終 BOSS？',['訊息 999+','月底帳單','活動截止日','無限追加的瓜']],
-['大家要選一個超能力？',['讀心術','瞬間移動','無限抽卡券','自動整理聊天紀錄']],
-['看到「不要外流」，你會？',['收到！','先鎖手機','開啟保密模式','這句話好熟']],
-['有人發「？？？」代表？',['真的困惑','大事不妙','等人解釋','問號不夠用']],
-['群組要辦頒獎典禮，最大獎？',['年度瓜王','最佳吐槽','最強軍師','娃娃富豪']],
-['看到「哈哈哈哈」，你會？',['跟著笑','問發生什麼事','先翻聊天紀錄','發貼圖']],
-['群組要拍畢業照，大家會？',['抱娃娃入鏡','全員比愛心','有人閉眼','拍一百張才滿意']],
-['聚會突然下大雨，第一個反應？',['保護痛包','先找室內','雨中拍照','繼續吃飯']],
-['如果只能帶一樣東西出門？',['手機','娃娃','錢包','爆米花']],
-['看到「今天先這樣」，你會？',['明天繼續','終於可以睡了','再補一個瓜','晚安貼圖']],
-['群組的共同弱點是？',['帥哥','可愛娃娃','限量周邊','新鮮的瓜']]
-];
-const pick=()=>{let options=MCQ.map((_,i)=>i).filter(i=>!used.includes(i));if(!options.length)throw Error('題庫已用完');let idx=options[Math.floor(Math.random()*options.length)];used.push(idx);return MCQ[idx]};
+// 題目唯一來源：cat-sync/questions.json；修改 JSON 後重新部署即可生效。
+let MCQ=[];
+let BANK_VERSION='cat-sync-questions-v4';
+const TITLE_NAMES=['牛牛','99','溫溫','橘子','瑄','瓜','貓貓','安妮','月月','凡凡'];
+function hashSeed(value){let h=2166136261;for(const ch of value){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function seededRandom(seed){let state=seed>>>0;return ()=>{state=(state+0x6D2B79F5)>>>0;let t=state;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296}}
+function seededShuffle(items,rng){let arr=items.slice();for(let i=arr.length-1;i>0;i--){let j=Math.floor(rng()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function optionsFor(item,id,roomCode){if(!item.dynamic)return item.options.slice();const rng=seededRandom(hashSeed([roomCode,item.id,BANK_VERSION].join('|')));const names=seededShuffle(TITLE_NAMES,rng);return item.dynamic.labels.map((title,i)=>title+'－'+names[i])}
+function optionsHash(options){return hashSeed(JSON.stringify(options)).toString(16).padStart(8,'0')}
+const QUESTIONS_READY=fetch('./questions.json',{cache:'no-store'}).then(async r=>{if(!r.ok)throw Error('題庫 JSON 載入失敗（HTTP '+r.status+'）');const data=await r.json();if(!Array.isArray(data.questions)||data.questions.length<20||data.questions.some(q=>!q.question||!Array.isArray(q.options)||q.options.length!==4))throw Error('題庫 JSON 格式錯誤');BANK_VERSION=data.version;MCQ=data.questions;return MCQ});
+const pick=()=>{let options=MCQ.map((_,i)=>i).filter(i=>!used.includes(i));if(!options.length)throw Error('題庫已用完');let idx=options[Math.floor(Math.random()*options.length)];used.push(idx);return {item:MCQ[idx],id:idx}};
 const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function send(event,payload){if(!channel)return;await channel.send({type:'broadcast',event,payload:{...payload,from:myId}})}
 function renderMembers(){let arr=Object.values(members);$('members').innerHTML=arr.map(p=>'<div class="player">'+safe(p.name)+(p.id===hostId?' 👑':'')+'</div>').join('');show('start',host&&arr.length>=2);show('hostSettings',host&&!round);$('roundSettings').textContent='本局 '+totalRounds+' 題 · 每題 30 秒';$('progress').textContent=Object.keys(answers).length+' / '+arr.length+' 人已作答';}
-function broadcastState(){if(host)send('state',{members:Object.values(members),hostId,round,question,questionOptions,totalRounds,deadline,answers,revealed,history,currentVersion})}
+function broadcastState(){if(host)send('state',{members:Object.values(members),hostId,round,question,questionOptions,questionId,questionDigest,totalRounds,deadline,answers,revealed,history,currentVersion})}
 function render(){show('setup',false);show('lobby',!round);show('game',!!round);$('roomCode').textContent=room;$('share').textContent=location.origin+'/cat-sync/?room='+room;renderMembers();if(!round)return;$('round').textContent='第 '+round+' / '+totalRounds+' 題';$('question').textContent=question;let submitted=Object.hasOwn(answers,myId);show('answerArea',!revealed&&!submitted);$('choices').innerHTML=questionOptions.map((v,i)=>'<button class="choice" data-index="'+i+'"><span class="letter">'+String.fromCharCode(65+i)+'</span>'+safe(v)+'</button>').join('');$('choices').querySelectorAll('button').forEach(btn=>btn.onclick=()=>submitChoice(Number(btn.dataset.index)));$('progress').textContent=revealed?'本題答案已揭曉':submitted?'已送出！等待其他人或倒數結束…':Object.keys(answers).length+' / '+Object.keys(members).length+' 人已作答';show('revealArea',revealed);show('next',revealed&&host&&round<totalRounds);show('finish',revealed&&host&&round>=totalRounds);if(revealed){$('answers').innerHTML=Object.values(members).map(p=>'<div class="answer">'+safe(p.name)+'：<b>'+safe(answers[p.id]??'未作答')+'</b></div>').join('');let vals=Object.values(answers).map(x=>x.trim().toLocaleLowerCase());let count=Math.max(0,...[...new Set(vals)].map(v=>vals.filter(x=>x===v).length));$('match').textContent=count>=2?'✨ 最多 '+count+' 人同答案！':'這輪沒有同答案，下題再試！';}updateTimer()}
 function updateTimer(){if(!round)return;let remaining=revealed?0:Math.max(0,Math.ceil((deadline-Date.now())/1000));$('timer').textContent=revealed?'本題已結束':'⏱ 剩餘 '+remaining+' 秒';$('timer').classList.toggle('urgent',!revealed&&remaining<=10);if(host&&!revealed&&deadline&&Date.now()>=deadline)doReveal()}
-function applyState(p){if(host||p.hostId!==hostId||p.currentVersion<currentVersion)return;currentVersion=p.currentVersion;members=Object.fromEntries(p.members.map(x=>[x.id,x]));round=p.round;question=p.question;questionOptions=p.questionOptions||[];totalRounds=p.totalRounds||10;deadline=p.deadline||0;answers=p.answers;revealed=p.revealed;history=p.history;render()}
-function newRound(){if(round>=totalRounds)return;round++;let item=pick();question=item[0];questionOptions=item[1];answers={};revealed=false;deadline=Date.now()+30000;currentVersion++;broadcastState();render()}
+function applyState(p){if(host||p.hostId!==hostId||p.currentVersion<currentVersion)return;currentVersion=p.currentVersion;members=Object.fromEntries(p.members.map(x=>[x.id,x]));round=p.round;question=p.question;questionOptions=p.questionOptions||[];questionId=Number.isInteger(p.questionId)?p.questionId:-1;questionDigest=p.questionDigest||'';if(questionId>=0&&MCQ[questionId]){let expected=optionsFor(MCQ[questionId],questionId,room);if(optionsHash(expected)!==questionDigest||JSON.stringify(expected)!==JSON.stringify(questionOptions)){notice('題目選項同步驗證失敗，請重新整理或確認所有玩家使用相同版本',true);return}}totalRounds=p.totalRounds||10;deadline=p.deadline||0;answers=p.answers;revealed=p.revealed;history=p.history;render()}
+function newRound(){if(round>=totalRounds)return;round++;let picked=pick();questionId=picked.id;question=picked.item.question;questionOptions=optionsFor(picked.item,questionId,room);questionDigest=optionsHash(questionOptions);answers={};revealed=false;deadline=Date.now()+30000;currentVersion++;broadcastState();render()}
 function doReveal(){if(!host||revealed)return;revealed=true;let vals=Object.values(answers).map(x=>x.trim().toLocaleLowerCase());let best=Math.max(0,...[...new Set(vals)].map(v=>vals.filter(x=>x===v).length));history.push({question,answers:Object.values(members).map(p=>({name:p.name,answer:answers[p.id]||'未作答'})),best});currentVersion++;broadcastState();render()}
 function submitChoice(index){if(revealed||!round||Date.now()>=deadline||Object.hasOwn(answers,myId))return;let answer=questionOptions[index];if(!answer)return;if(host){answers[myId]=answer;currentVersion++;if(Object.keys(answers).length>=Object.keys(members).length)doReveal();else{broadcastState();render()}}else{answers[myId]=answer;render();send('answer',{answer,round})}}
 function normalizeAnswer(v){return String(v??'').normalize('NFKC').trim().replace(/\s+/g,'').toLocaleLowerCase('zh-Hant')}
@@ -138,8 +68,8 @@ function finish(){
   $('pairs').innerHTML='<h3>💜 最有默契的組合</h3>'+list(pairs.filter(p=>p.rate===highest))+'<h3>🌿 最沒默契的組合</h3>'+list(pairs.filter(p=>p.rate===lowest),true);
 }
 
-async function connect(isHost){if(isHost && new URLSearchParams(location.search).has('room'))return notice('這是房間邀請連結，請加入房間',true);me=clean($('nickname').value);if(!me)return notice('請先輸入暱稱',true);room=isHost?Array.from(crypto.getRandomValues(new Uint8Array(8)),x=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[x%32]).join(''):clean($('roomInput').value).toUpperCase();if(!roomRegex.test(room))return notice('請輸入有效的 8 位房號',true);$('create').disabled=$('join').disabled=true;try{let res=await fetch('/api/cat-config');if(!res.ok)throw Error('讀取設定失敗');let config=await res.json();if(!config.url)throw Error('缺少原本的 SUPABASE_URL 設定');if(!config.publishableKey || !(config.publishableKey.startsWith('sb_publishable_') || config.publishableKey.startsWith('eyJ')))throw Error('請在 Vercel 設定 SUPABASE_PUBLISHABLE_KEY（公開金鑰）');client=supabase.createClient(config.url,config.publishableKey,{realtime:{params:{eventsPerSecond:10}}});host=isHost;hostId=host?myId:'';channel=client.channel('cat-sync-'+room,{config:{broadcast:{self:false},presence:{key:myId}}});channel.on('broadcast',{event:'hello'},({payload:p})=>{if(host){if(!members[p.from]){members[p.from]={id:p.from,name:clean(p.name)};currentVersion++;broadcastState();render()}else broadcastState()}}).on('broadcast',{event:'state'},({payload:p})=>{if(!host&&!hostId)hostId=p.hostId;applyState(p)}).on('broadcast',{event:'answer'},({payload:p})=>{if(!host||revealed||!round||Date.now()>=deadline||p.round!==round||!members[p.from]||Object.hasOwn(answers,p.from)||!questionOptions.includes(p.answer))return;answers[p.from]=p.answer;currentVersion++;if(Object.keys(answers).length>=Object.keys(members).length)doReveal();else{broadcastState();render()}}).on('broadcast',{event:'finish'},()=>finish()).on('broadcast',{event:'sync'},()=>{if(host)broadcastState()}).on('presence',{event:'leave'},({leftPresences})=>{if(!host)return;for(let p of leftPresences){if(p.user_id&&p.user_id!==myId)delete members[p.user_id]}currentVersion++;broadcastState();render()}).subscribe(async status=>{if(status==='SUBSCRIBED'&&!connected){connected=true;await channel.track({user_id:myId,name:me});if(host){members[myId]={id:myId,name:me};render();notice('房間已建立，分享連結給朋友！')}else{show('setup',false);show('lobby',true);notice('正在等待房主同步…');send('hello',{name:me});send('sync',{});setTimeout(()=>{if(!hostId)notice('尚未收到房主回應，請確認房號與房主是否在線',true)},4500)}}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')notice('即時連線失敗，請檢查 Supabase Realtime 設定',true)});}catch(e){notice(e.message,true);$('create').disabled=$('join').disabled=false}}
-$('create').onclick=()=>connect(true);$('join').onclick=()=>connect(false);$('copy').onclick=async()=>{await navigator.clipboard.writeText(location.origin+'/cat-sync/?room='+room);notice('已複製邀請連結')};$('totalRounds').onchange=()=>{if(host&&!round){totalRounds=Number($('totalRounds').value);currentVersion++;broadcastState();render()}};$('start').onclick=()=>{if(host&&Object.keys(members).length>=2){totalRounds=Number($('totalRounds').value);newRound()}};$('next').onclick=()=>{if(host)newRound()};$('finish').onclick=()=>{if(host){send('finish',{});finish()}};timerHandle=setInterval(updateTimer,200);
+async function connect(isHost){if(isHost && new URLSearchParams(location.search).has('room'))return notice('這是房間邀請連結，請加入房間',true);me=clean($('nickname').value);if(!me)return notice('請先輸入暱稱',true);room=isHost?Array.from(crypto.getRandomValues(new Uint8Array(8)),x=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[x%32]).join(''):clean($('roomInput').value).toUpperCase();if(!roomRegex.test(room))return notice('請輸入有效的 8 位房號',true);$('create').disabled=$('join').disabled=true;try{await QUESTIONS_READY;let res=await fetch('/api/cat-config');if(!res.ok)throw Error('讀取設定失敗');let config=await res.json();if(!config.url)throw Error('缺少原本的 SUPABASE_URL 設定');if(!config.publishableKey || !(config.publishableKey.startsWith('sb_publishable_') || config.publishableKey.startsWith('eyJ')))throw Error('請在 Vercel 設定 SUPABASE_PUBLISHABLE_KEY（公開金鑰）');client=supabase.createClient(config.url,config.publishableKey,{realtime:{params:{eventsPerSecond:10}}});host=isHost;hostId=host?myId:'';channel=client.channel('cat-sync-'+room,{config:{broadcast:{self:false},presence:{key:myId}}});channel.on('broadcast',{event:'hello'},({payload:p})=>{if(host){if(!members[p.from]){members[p.from]={id:p.from,name:clean(p.name)};currentVersion++;broadcastState();render()}else broadcastState()}}).on('broadcast',{event:'state'},({payload:p})=>{if(!host&&!hostId)hostId=p.hostId;applyState(p)}).on('broadcast',{event:'answer'},({payload:p})=>{if(!host||revealed||!round||Date.now()>=deadline||p.round!==round||!members[p.from]||Object.hasOwn(answers,p.from)||!questionOptions.includes(p.answer))return;answers[p.from]=p.answer;currentVersion++;if(Object.keys(answers).length>=Object.keys(members).length)doReveal();else{broadcastState();render()}}).on('broadcast',{event:'finish'},()=>finish()).on('broadcast',{event:'sync'},()=>{if(host)broadcastState()}).on('presence',{event:'leave'},({leftPresences})=>{if(!host)return;for(let p of leftPresences){if(p.user_id&&p.user_id!==myId)delete members[p.user_id]}currentVersion++;broadcastState();render()}).subscribe(async status=>{if(status==='SUBSCRIBED'&&!connected){connected=true;await channel.track({user_id:myId,name:me});if(host){members[myId]={id:myId,name:me};render();notice('房間已建立，分享連結給朋友！')}else{show('setup',false);show('lobby',true);notice('正在等待房主同步…');send('hello',{name:me});send('sync',{});setTimeout(()=>{if(!hostId)notice('尚未收到房主回應，請確認房號與房主是否在線',true)},4500)}}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')notice('即時連線失敗，請檢查 Supabase Realtime 設定',true)});}catch(e){notice(e.message,true);$('create').disabled=$('join').disabled=false}}
+$('create').onclick=()=>connect(true);$('join').onclick=()=>connect(false);$('copy').onclick=async()=>{await navigator.clipboard.writeText(location.origin+'/cat-sync/?room='+room);notice('已複製邀請連結')};$('totalRounds').onchange=()=>{if(host&&!round){totalRounds=Number($('totalRounds').value);currentVersion++;broadcastState();render()}};$('start').onclick=()=>{if(host&&Object.keys(members).length>=2){totalRounds=Number($('totalRounds').value);used=[];history=[];round=0;newRound()}};$('next').onclick=()=>{if(host)newRound()};$('finish').onclick=()=>{if(host){send('finish',{});finish()}};timerHandle=setInterval(updateTimer,200);
 $('download').onclick=()=>{
   const {names,pairs,highest,lowest}=resultData();
   const W=Math.max(850,170+names.length*180),scale=2,pad=45,numberW=48,colW=(W-pad*2-numberW)/Math.max(1,names.length);
