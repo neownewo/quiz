@@ -1,10 +1,13 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>貓貓腦迴路｜同詞相遇</title><style>
 :root{font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;color:#263344;background:#f6f4fc}*{box-sizing:border-box}body{margin:0}.wrap{max-width:680px;margin:auto;padding:25px 16px 60px}.card{background:white;border-radius:22px;padding:23px;margin:16px 0;box-shadow:0 8px 30px #554c8c12}h1{font-size:30px;margin:12px 0}h2{margin-top:0}p{line-height:1.7}.muted{color:#777a89}.tiny{font-size:13px}input,button,select{font:inherit;padding:12px 14px;border-radius:12px}input,select{border:1px solid #d8d5e6;width:100%;margin:6px 0 12px}button{border:0;background:#6858cf;color:white;font-weight:700;cursor:pointer;margin:4px 4px 4px 0}button:disabled{opacity:.5;cursor:not-allowed}.secondary{background:#edeafb;color:#5544a5}.row{display:flex;gap:8px;flex-wrap:wrap}.hide{display:none!important}.pill{display:inline-block;border-radius:30px;background:#efeafd;color:#5d4ec0;padding:6px 12px;font-size:13px}.player{padding:9px 12px;border:1px solid #e5e0f4;border-radius:12px;margin:6px 0}.answer{background:#f6f4ff;border-radius:12px;padding:12px;margin:7px 0}.big{font-size:24px;font-weight:800}.error{color:#b32b48}.success{color:#217b54}#toast{min-height:22px}#share{word-break:break-all}#poster{background:linear-gradient(150deg,#f3efff,#fff7fb);padding:25px;border-radius:20px}#poster h2{color:#5343ad}
-</style></head><body><main class="wrap"><span class="pill">🐾 貓貓腦迴路</span><h1>我們能想到同一個詞嗎？</h1><p class="muted">LINE 群組專屬題庫 · 各自手機同步作答 · 不儲存遊戲結果</p><div id="toast"></div>
+
+#poster{background:#fcfbff;border:1px solid #eae6f4;color:#343047;padding:20px 12px}#poster h2{color:#393448;margin-bottom:4px}#summary{font-size:13px;color:#9891a5;margin-top:0}.result-scroll{overflow-x:auto;padding-bottom:8px}.result-table{width:100%;border-collapse:separate;border-spacing:7px 10px;table-layout:fixed;min-width:420px}.result-table th{font-size:12px;font-weight:600;color:#a19aaa;overflow-wrap:anywhere}.result-table th:first-child{width:32px}.result-table td{background:#eee7f8;color:#745b94;text-align:center;padding:13px 6px;border-radius:13px;font-weight:700;overflow-wrap:anywhere;word-break:break-word;font-size:14px}.result-table td:nth-child(2n+1){background:#dff3ed;color:#538b7b}.result-table td.round-no{background:transparent!important;color:#a9a2b4!important;font-size:12px;font-weight:400;padding:4px}.result-table td.matched{outline:2px solid #d4b6f5;outline-offset:-2px}.pair-section{border-top:1px solid #e9e4f1;margin-top:16px;padding-top:14px}.pair-section h3{font-size:16px;margin:6px 0 10px}.pair-row{display:flex;justify-content:space-between;gap:8px;background:#f3f0f9;border-radius:12px;padding:11px;margin:7px 0;font-size:13px}.pair-row.low{background:#edf5f3}.pair-row strong{white-space:nowrap}.result-note{font-size:11px;color:#9992a5;line-height:1.6}
+.choice-list{display:grid;grid-template-columns:1fr;gap:10px}.choice{display:flex;align-items:center;text-align:left;width:100%;background:#f2eefb;color:#493d70;padding:15px;line-height:1.5;border:2px solid transparent;margin:0}.choice:nth-child(2n){background:#e5f5f0;color:#346f60}.choice:active{border-color:#8572d0;transform:scale(.99)}.letter{display:inline-flex;align-items:center;justify-content:center;flex:none;width:30px;height:30px;border-radius:9px;background:#fff9;margin-right:12px;font-weight:800}.timer{margin:0 0 16px}.timer.urgent{background:#ffe6e6;color:#b32345}#hostSettings{margin:12px 0}#hostSettings select{max-width:240px}@media(min-width:480px){.choice-list{grid-template-columns:1fr 1fr}}
+</style></head><body><main class="wrap"><span class="pill">🐾 貓貓腦迴路</span><h1>我們的腦迴路有多同步？</h1><p class="muted">LINE 群組專屬選擇題 · 每題 30 秒 · 即時多人作答</p><div id="toast"></div>
 <section id="setup" class="card"><h2>進入遊戲</h2><label>你的暱稱</label><input id="nickname" maxlength="18" placeholder="例如：貓貓"><div class="row"><button id="create">建立房間</button><button id="join">加入房間</button></div><label>加入房號（建立房間可留空）</label><input id="roomInput" maxlength="8" placeholder="8 位英數房號"></section>
-<section id="lobby" class="card hide"><h2>房間 <span id="roomCode"></span></h2><p id="share" class="muted tiny"></p><button class="secondary" id="copy">複製邀請連結</button><h3>房間成員</h3><div id="members"></div><p class="muted tiny">房主保持頁面開啟。所有玩家加入後，由房主開始。</p><button id="start" class="hide">開始遊戲</button></section>
-<section id="game" class="card hide"><span id="round" class="pill"></span><h2 id="question"></h2><div id="answerArea"><label>你第一時間想到的詞</label><input id="answer" maxlength="40" placeholder="輸入答案，送出後不能修改"><button id="submit">送出答案</button></div><p id="progress" class="muted"></p><div id="revealArea" class="hide"><h3>本輪結果</h3><div id="answers"></div><p id="match" class="big"></p><button id="next" class="hide">下一題</button><button class="secondary" id="finish">結束並製作結果圖</button></div></section>
-<section id="end" class="card hide"><div id="poster"><h2>🐾 貓貓腦迴路同步報告</h2><p id="summary"></p><div id="history"></div><p class="tiny">一起想到同一個詞，就是我們的默契 ♡</p></div><button id="download">下載結果 PNG</button><button class="secondary" onclick="location.href='/cat-sync/'">重新開局</button></section>
+<section id="lobby" class="card hide"><h2>房間 <span id="roomCode"></span></h2><p id="share" class="muted tiny"></p><button class="secondary" id="copy">複製邀請連結</button><div id="hostSettings" class="hide"><label for="totalRounds">本局題數（房主選擇）</label><select id="totalRounds"><option value="10">10 題</option><option value="15">15 題</option><option value="20">20 題</option></select></div><p id="roundSettings" class="muted tiny"></p><h3>房間成員</h3><div id="members"></div><p class="muted tiny">房主保持頁面開啟。所有玩家加入後，由房主開始。</p><button id="start" class="hide">開始遊戲</button></section>
+<section id="game" class="card hide"><span id="round" class="pill"></span><h2 id="question"></h2><p id="timer" class="pill timer">剩餘 30 秒</p><div id="answerArea"><p class="muted tiny">選擇最符合你直覺的答案，送出後不能修改</p><div id="choices" class="choice-list"></div></div><p id="progress" class="muted"></p><div id="revealArea" class="hide"><h3>本輪結果</h3><div id="answers"></div><p id="match" class="big"></p><button id="next" class="hide">下一題</button><button class="secondary" id="finish">結束並製作結果圖</button></div></section>
+<section id="end" class="card hide"><div id="poster"><h2>🐾 貓貓腦迴路同步報告</h2><p id="summary"></p><div id="history"></div><div id="pairs" class="pair-section"></div><p class="result-note">默契率＝兩人選項相同的題數 ÷ 兩人共同作答的題數。超時視為未作答；同分並列。</p></div><button id="download">下載結果 PNG</button><button class="secondary" onclick="location.href='/cat-sync/'">重新開局</button></section>
 </main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script>
 const BANK=[
 ['inside','有人說「我要偷偷跟你們說」，你第一個想到什麼？'],['inside','群組突然安靜五分鐘，你覺得大家在幹嘛？'],['inside','有人打錯字，群組第一個會出現什麼反應？'],['inside','有人說「我有兩件事要說」，你第一個想到什麼？'],['inside','有人說「我先去尿尿」，下一個最可能出現的詞是？'],['inside','看到「吃爆米花」，你會聯想到什麼？'],['inside','聽到「瓜怎麼吃不完」，你想到什麼？'],['inside','提到「賽博抱抱」，你想到什麼？'],['inside','如果群組玩狼人殺，第一個想到的角色是？'],['inside','看到「阿嬤」，你第一個想到什麼？'],['inside','群組改名的話，你第一個會加進去的詞是？'],['inside','有人說「我快發瘋」，你第一個想到什麼？'],['inside','看到「腦袋超人」，你想到什麼？'],['inside','提到「軍師」，你第一個想到什麼？'],['inside','有人說「我不明白」，你會接什麼詞？'],['inside','聽到「我自我認同是一隻吉伊」，你想到什麼？'],['inside','群組有人突然喊「來」，你想到什麼？'],['inside','看到「好好笑」，你第一個聯想到誰或什麼？'],['inside','聽到「簡單點」，你第一個想到什麼？'],['inside','有人說「我有一件事情要宣布」，你第一個想到什麼？'],
@@ -12,21 +15,158 @@ const BANK=[
 ['scenario','如果群組全員一起出國，第一個會發生什麼事？'],['scenario','大家突然被關在同一間密室，最先出現的物品是？'],['scenario','群組要開一間店，你覺得會賣什麼？'],['scenario','如果大家一起拍戀愛實境節目，節目名稱第一個詞是？'],['scenario','大家突然要辦一場茶會，最先準備什麼？'],['scenario','群組有人中樂透，第一個會買什麼？'],['scenario','如果群組變成遊戲公會，公會名稱會有什麼詞？'],['scenario','大家一起去逛動漫展，最先衝去哪裡？'],['scenario','如果大家一起拍電影，會是什麼類型？'],['scenario','大家突然要選吉祥物，你第一個想到什麼？'],['scenario','如果群組出現一隻貓，大家會給牠取什麼名字？'],['scenario','全員去唱歌，第一首歌會是什麼？'],['scenario','大家一起去夜市，第一個買什麼？'],['scenario','如果群組成為一間公司，最重要的部門叫什麼？'],['scenario','如果大家都穿越到古代，第一個會遇到什麼？'],['scenario','如果明天有線下聚會，最可能帶什麼周邊？'],['scenario','如果有人突然傳了 30 張照片，大家第一個會回什麼？'],['scenario','群組要設一個共同暗號，你第一個想到什麼？'],['scenario','如果群組有一個專屬節日，會慶祝什麼？'],['scenario','大家一起玩真心話大冒險，第一個會出現什麼詞？']
 ];
 const $=id=>document.getElementById(id),show=(id,on=true)=>$(id).classList.toggle('hide',!on);
+let totalRounds=10,deadline=0,questionOptions=[],timerHandle=null;
 let client,channel,room='',me='',host=false,hostId='',myId=crypto.randomUUID(),members={},round=0,question='',answers={},revealed=false,history=[],used=[],currentVersion=0,connected=false;
 const notice=(msg,bad=false)=>{$('toast').textContent=msg;$('toast').className=bad?'error':'success'};
 const clean=s=>String(s||'').trim().slice(0,40),roomRegex=/^[A-Z0-9]{8}$/;
-const pick=()=>{if(used.length>=BANK.length)used=[];let options=BANK.map((q,i)=>i).filter(i=>!used.includes(i));let idx=options[Math.floor(Math.random()*options.length)];used.push(idx);return BANK[idx][1]};
+const MCQ=[
+['有人說「我要偷偷跟你們說」，你會？',['爆米花先拿好','先問有沒有懶人包','光速搬板凳','假裝在忙其實偷看']],
+['群組突然安靜五分鐘，大家在？',['偷偷開小群','認真上班（稀有）','一起睡著','正在打字寫論文']],
+['有人打錯字，群組會？',['截圖永久保存','直接歪樓','幫他改成更錯','全員裝沒看到']],
+['有人說「我有兩件事要說」，你會？',['先聽第二件','拿出爆米花','喊等等我去尿尿','叫他先做簡報']],
+['有人說「我先去尿尿」，你的反應？',['准奏','請攜帶手機','這也要報備嗎','先把瓜留下']],
+['今天的群組瓜太多，應該？',['成立瓜農合作社','爆米花吃到飽','申請八卦年假','開一間瓜田直播台']],
+['聽到「賽博抱抱」，你想到？',['雲端擁抱','網路線纏在一起','電子佛祖保佑','抱一下但先別碰我']],
+['如果群組玩狼人殺，誰最可疑？',['最安靜的','一直喊我是好人的','主動帶風向的','第一個去尿尿的']],
+['群組出現「阿嬤」兩字，你會？',['先確認是哪位阿嬤','端茶請安','拿出祖傳寶物','直接呼叫救護車']],
+['大家要改群組名稱，最適合？',['婆婆酒精研究所','貓貓吃瓜股份有限公司','衰小女團宇宙','精神狀態良好協會']],
+['有人說「我快發瘋」，你會？',['一起瘋比較快','發送賽博抱抱','問今天又是哪齣','先幫他點外送']],
+['腦袋超人的超能力是？',['秒懂八卦關係圖','截圖自動分類','預測下一個瓜','上班還能回訊息']],
+['軍師上線第一件事？',['畫人物關係圖','開戰情會議','先吃點心','問有沒有錄音']],
+['看到「我不明白」，你會接？',['我也不明白','懶人包在哪','先不要明白','請播放前情提要']],
+['自我認同是一隻吉伊，最需要？',['毛茸茸的尊重','一張身分證','合法的窩','專屬貼圖']],
+['有人在群組突然喊「來」，你會？',['坐好等故事','立刻喊到','先問有沒有瓜','默默關掉通知']],
+['看到「好好笑」，你的反應？',['到底笑什麼啦','哈哈哈哈哈哈','先截圖再說','這個不能外流']],
+['「簡單點」的下一句最適合？',['說話的方式簡單點','事情怎麼又複雜了','先給我流程圖','可以直接懶人包嗎']],
+['大家一起去茶會，第一個帶什麼？',['娃娃軍團','滿滿的痛包','爆米花','可疑的行李箱']],
+['看到秦徹，你會想到？',['霸總氣場','娃娃排排站','茶會燈箱','錢包開始顫抖']],
+['看到祁煜，你會想到？',['魚魚','漂亮的臉','卡池又來了','我的錢包呢']],
+['看到敖尹，你會想到？',['小狼','打卡活動','一整面燈箱','又要開始討論了']],
+['看到沈星回，你會想到？',['光獵','娃娃','睡覺','甜甜的蛋糕']],
+['看到夏以晝，你會想到？',['哥哥','又要抽卡','命運的安排','我先哭一下']],
+['看到黎深，你會想到？',['醫生','雪','冷靜的吐槽','這題怎麼那麼難']],
+['痛包最重要的配備？',['娃娃','徽章','肩膀的耐力','永遠不夠的預算']],
+['看到燈箱，你會想到？',['拍照打卡','設計稿改到瘋','蕾絲到底哪來的','大家先別吵']],
+['看到蕾絲，你會想到？',['夢幻少女風','燈箱','這真的搭嗎','我只看臉']],
+['看到古風，你會想到？',['帥哥','仙氣飄飄','一秒穿越','好想拍照']],
+['看到扭蛋，你會想到？',['再轉一次','隱藏款在哪','錢包見底','重複三個']],
+['看到抓寶，你會想到？',['到處打卡','我先吃飯','隊友救命','最後一關在哪']],
+['看到 SABON，你會想到？',['香香的禮盒','禮物太貴了吧','洗完澡香噴噴','這題有故事']],
+['看到刈包，你會想到？',['花生粉','香菜加爆','瓜瓜','先來一份']],
+['看到面相，你會想到？',['襪子神算','看一眼就懂','命理節目','先別看我']],
+['看到飛雷神，你會想到？',['瞬間消失','我先去忙','忍者出沒','傳送到瓜田']],
+['大家一起出國，第一個出狀況的是？',['迷路','行李爆炸','集合遲到','購物超時']],
+['大家一起被關進密室，第一個做什麼？',['先拍團照','找出口','開始互相懷疑','叫外送']],
+['群組開一間店，賣什麼最賺？',['爆米花','娃娃周邊','瓜田入場券','賽博抱抱']],
+['群組拍戀愛實境節目，節目名稱？',['戀愛還是吃瓜','心動警報失靈','誰又在情勒','單身也很忙']],
+['有人中樂透，第一筆錢花在哪？',['抽卡','買痛包','包場茶會','請大家吃飯']],
+['群組成立公會，職業分配？',['八卦情報員','爆米花補給官','娃娃守護者','專業吐槽師']],
+['動漫展第一站去哪？',['娃娃攤','周邊區','拍照牆','先找廁所']],
+['群組一起拍電影，類型會是？',['懸疑推理','荒謬喜劇','宮鬥大戲','紀錄片：瓜的一生']],
+['群組吉祥物應該是？',['貓貓','吉伊','小狼','一顆爆米花']],
+['群組撿到一隻貓，要取名？',['瓜瓜','牛牛','阿嬤','爆米花']],
+['全員唱 KTV，最先發生什麼？',['有人搶麥','全員大合唱','點了歌沒人唱','開始聊八卦']],
+['一起逛夜市，先買什麼？',['刈包','雞排','珍珠奶茶','先買爆米花']],
+['群組公司最重要的部門？',['吃瓜情報部','情緒支援部','娃娃採購部','危機公關部']],
+['全員穿越古代，第一件事？',['開茶會','組建軍師團','找帥哥','先研究怎麼回家']],
+['線下聚會最可能帶什麼？',['娃娃','痛包','相機','裝滿瓜的腦袋']],
+['有人傳 30 張照片，你會回？',['我先看一下','太多了吧！','全部存起來','請做成懶人包']],
+['群組專屬暗號最適合？',['瓜熟了','賽博抱抱','腦袋超人集合','今天也活著']],
+['群組專屬節日要慶祝？',['吃瓜節','娃娃生日','全員不崩潰日','爆米花感恩節']],
+['真心話大冒險第一題？',['你最近在暈誰','你最常偷看誰限動','你買了多少周邊','你是不是有小群']],
+['大家突然全員變成動物？',['貓貓','小狼','吉伊','只會吃瓜的水豚']],
+['群組要參加運動會，最強項目？',['八卦接力','手機打字競速','娃娃負重賽','爆米花馬拉松']],
+['群組要出一本書，書名會是？',['那些年我們吃過的瓜','今天也沒有要吵架','群組生存指南','我只是想看帥哥']],
+['一個人說「我沒事」，通常是？',['真的沒事','等一下就有事','正在打長文','先送抱抱']],
+['大家一起做手作，第一個問題？',['材料買太多','膠水不夠','尺寸量錯','做一半開始聊天']],
+['抽卡歪掉的第一反應？',['再十抽','先冷靜','截圖給大家','錢包表示抗議']],
+['有人說「最後一次買」，你相信？',['完全不信','這次是真的吧','先幫他記錄','下週再問']],
+['如果大家一起開直播，內容？',['現場吃瓜','娃娃開箱','互相吐槽','深夜談心']],
+['大家約見面最常出現？',['等我一下','我快到了','我迷路了','先幫我點餐']],
+['群組出現重大消息，誰先到？',['爆米花','軍師','截圖小隊','剛起床的人']],
+['最適合群組的口號？',['有瓜一起吃','今天也很正常','娃娃比人重要','禁止空腹八卦']],
+['假如有時光機，你會？',['回去阻止手滑抽卡','再買一次周邊','重看經典對話','直接去未來看瓜']],
+['大家開一家咖啡店，招牌飲品？',['吃瓜拿鐵','賽博抱抱奶茶','小狼特調','阿嬤的秘密']],
+['群組如果變成 RPG，最終 BOSS？',['訊息 999+','月底帳單','活動截止日','無限追加的瓜']],
+['大家要選一個超能力？',['讀心術','瞬間移動','無限抽卡券','自動整理聊天紀錄']],
+['看到「不要外流」，你會？',['收到！','先鎖手機','開啟保密模式','這句話好熟']],
+['有人發「？？？」代表？',['真的困惑','大事不妙','等人解釋','問號不夠用']],
+['群組要辦頒獎典禮，最大獎？',['年度瓜王','最佳吐槽','最強軍師','娃娃富豪']],
+['看到「哈哈哈哈」，你會？',['跟著笑','問發生什麼事','先翻聊天紀錄','發貼圖']],
+['群組要拍畢業照，大家會？',['抱娃娃入鏡','全員比愛心','有人閉眼','拍一百張才滿意']],
+['聚會突然下大雨，第一個反應？',['保護痛包','先找室內','雨中拍照','繼續吃飯']],
+['如果只能帶一樣東西出門？',['手機','娃娃','錢包','爆米花']],
+['看到「今天先這樣」，你會？',['明天繼續','終於可以睡了','再補一個瓜','晚安貼圖']],
+['群組的共同弱點是？',['帥哥','可愛娃娃','限量周邊','新鮮的瓜']]
+];
+const pick=()=>{let options=MCQ.map((_,i)=>i).filter(i=>!used.includes(i));if(!options.length)throw Error('題庫已用完');let idx=options[Math.floor(Math.random()*options.length)];used.push(idx);return MCQ[idx]};
 const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function send(event,payload){if(!channel)return;await channel.send({type:'broadcast',event,payload:{...payload,from:myId}})}
-function renderMembers(){let arr=Object.values(members);$('members').innerHTML=arr.map(p=>'<div class="player">'+safe(p.name)+(p.id===hostId?' 👑':'')+'</div>').join('');show('start',host&&arr.length>=2);$('progress').textContent=Object.keys(answers).length+' / '+arr.length+' 人已作答';}
-function broadcastState(){if(host)send('state',{members:Object.values(members),hostId,round,question,answers,revealed,history,currentVersion})}
-function render(){show('setup',false);show('lobby',!round);show('game',!!round);$('roomCode').textContent=room;$('share').textContent=location.origin+'/cat-sync/?room='+room;renderMembers();if(!round)return;$('round').textContent='第 '+round+' 題';$('question').textContent=question;let submitted=Object.hasOwn(answers,myId);show('answerArea',!revealed&&!submitted);$('progress').textContent=revealed?'全員答案已揭曉':submitted?'已送出！等待其他人…':Object.keys(answers).length+' / '+Object.keys(members).length+' 人已作答';show('revealArea',revealed);show('next',revealed&&host);if(revealed){$('answers').innerHTML=Object.values(members).map(p=>'<div class="answer">'+safe(p.name)+'：<b>'+safe(answers[p.id]??'未作答')+'</b></div>').join('');let vals=Object.values(answers).map(x=>x.trim().toLocaleLowerCase());let count=Math.max(0,...[...new Set(vals)].map(v=>vals.filter(x=>x===v).length));$('match').textContent=count>=2?'✨ 最多 '+count+' 人同詞！':'這輪還沒相遇，下題再試！';}}
-function applyState(p){if(host||p.hostId!==hostId||p.currentVersion<currentVersion)return;currentVersion=p.currentVersion;members=Object.fromEntries(p.members.map(x=>[x.id,x]));round=p.round;question=p.question;answers=p.answers;revealed=p.revealed;history=p.history;render()}
-function newRound(){round++;question=pick();answers={};revealed=false;currentVersion++;broadcastState();render()}
+function renderMembers(){let arr=Object.values(members);$('members').innerHTML=arr.map(p=>'<div class="player">'+safe(p.name)+(p.id===hostId?' 👑':'')+'</div>').join('');show('start',host&&arr.length>=2);show('hostSettings',host&&!round);$('roundSettings').textContent='本局 '+totalRounds+' 題 · 每題 30 秒';$('progress').textContent=Object.keys(answers).length+' / '+arr.length+' 人已作答';}
+function broadcastState(){if(host)send('state',{members:Object.values(members),hostId,round,question,questionOptions,totalRounds,deadline,answers,revealed,history,currentVersion})}
+function render(){show('setup',false);show('lobby',!round);show('game',!!round);$('roomCode').textContent=room;$('share').textContent=location.origin+'/cat-sync/?room='+room;renderMembers();if(!round)return;$('round').textContent='第 '+round+' / '+totalRounds+' 題';$('question').textContent=question;let submitted=Object.hasOwn(answers,myId);show('answerArea',!revealed&&!submitted);$('choices').innerHTML=questionOptions.map((v,i)=>'<button class="choice" data-index="'+i+'"><span class="letter">'+String.fromCharCode(65+i)+'</span>'+safe(v)+'</button>').join('');$('choices').querySelectorAll('button').forEach(btn=>btn.onclick=()=>submitChoice(Number(btn.dataset.index)));$('progress').textContent=revealed?'本題答案已揭曉':submitted?'已送出！等待其他人或倒數結束…':Object.keys(answers).length+' / '+Object.keys(members).length+' 人已作答';show('revealArea',revealed);show('next',revealed&&host&&round<totalRounds);show('finish',revealed&&host&&round>=totalRounds);if(revealed){$('answers').innerHTML=Object.values(members).map(p=>'<div class="answer">'+safe(p.name)+'：<b>'+safe(answers[p.id]??'未作答')+'</b></div>').join('');let vals=Object.values(answers).map(x=>x.trim().toLocaleLowerCase());let count=Math.max(0,...[...new Set(vals)].map(v=>vals.filter(x=>x===v).length));$('match').textContent=count>=2?'✨ 最多 '+count+' 人同答案！':'這輪沒有同答案，下題再試！';}updateTimer()}
+function updateTimer(){if(!round)return;let remaining=revealed?0:Math.max(0,Math.ceil((deadline-Date.now())/1000));$('timer').textContent=revealed?'本題已結束':'⏱ 剩餘 '+remaining+' 秒';$('timer').classList.toggle('urgent',!revealed&&remaining<=10);if(host&&!revealed&&deadline&&Date.now()>=deadline)doReveal()}
+function applyState(p){if(host||p.hostId!==hostId||p.currentVersion<currentVersion)return;currentVersion=p.currentVersion;members=Object.fromEntries(p.members.map(x=>[x.id,x]));round=p.round;question=p.question;questionOptions=p.questionOptions||[];totalRounds=p.totalRounds||10;deadline=p.deadline||0;answers=p.answers;revealed=p.revealed;history=p.history;render()}
+function newRound(){if(round>=totalRounds)return;round++;let item=pick();question=item[0];questionOptions=item[1];answers={};revealed=false;deadline=Date.now()+30000;currentVersion++;broadcastState();render()}
 function doReveal(){if(!host||revealed)return;revealed=true;let vals=Object.values(answers).map(x=>x.trim().toLocaleLowerCase());let best=Math.max(0,...[...new Set(vals)].map(v=>vals.filter(x=>x===v).length));history.push({question,answers:Object.values(members).map(p=>({name:p.name,answer:answers[p.id]||'未作答'})),best});currentVersion++;broadcastState();render()}
-function finish(){show('lobby',false);show('game',false);show('end',true);$('summary').textContent='共玩 '+history.length+' 題，其中 '+history.filter(h=>h.best>=2).length+' 題出現同詞相遇！';$('history').innerHTML=history.map((h,i)=>'<p><b>第 '+(i+1)+' 題｜'+safe(h.question)+'</b><br>'+h.answers.map(a=>safe(a.name)+'：'+safe(a.answer)).join(' ／ ')+'</p>').join('');}
-async function connect(isHost){me=clean($('nickname').value);if(!me)return notice('請先輸入暱稱',true);room=isHost?Array.from(crypto.getRandomValues(new Uint8Array(8)),x=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[x%32]).join(''):clean($('roomInput').value).toUpperCase();if(!roomRegex.test(room))return notice('請輸入有效的 8 位房號',true);$('create').disabled=$('join').disabled=true;try{let res=await fetch('/api/cat-config');if(!res.ok)throw Error('讀取設定失敗');let config=await res.json();if(!config.url)throw Error('缺少原本的 SUPABASE_URL 設定');if(!config.publishableKey || !(config.publishableKey.startsWith('sb_publishable_') || config.publishableKey.startsWith('eyJ')))throw Error('請在 Vercel 設定 SUPABASE_PUBLISHABLE_KEY（公開金鑰）');client=supabase.createClient(config.url,config.publishableKey,{realtime:{params:{eventsPerSecond:10}}});host=isHost;hostId=host?myId:'';channel=client.channel('cat-sync-'+room,{config:{broadcast:{self:false},presence:{key:myId}}});channel.on('broadcast',{event:'hello'},({payload:p})=>{if(host){if(!members[p.from]){members[p.from]={id:p.from,name:clean(p.name)};currentVersion++;broadcastState();render()}else broadcastState()}}).on('broadcast',{event:'state'},({payload:p})=>{if(!host&&!hostId)hostId=p.hostId;applyState(p)}).on('broadcast',{event:'answer'},({payload:p})=>{if(!host||revealed||!round||!members[p.from]||Object.hasOwn(answers,p.from))return;answers[p.from]=clean(p.answer);currentVersion++;if(Object.keys(answers).length>=Object.keys(members).length)doReveal();else{broadcastState();render()}}).on('broadcast',{event:'finish'},()=>finish()).on('broadcast',{event:'sync'},()=>{if(host)broadcastState()}).on('presence',{event:'leave'},({leftPresences})=>{if(!host)return;for(let p of leftPresences){if(p.user_id&&p.user_id!==myId)delete members[p.user_id]}currentVersion++;broadcastState();render()}).subscribe(async status=>{if(status==='SUBSCRIBED'&&!connected){connected=true;await channel.track({user_id:myId,name:me});if(host){members[myId]={id:myId,name:me};render();notice('房間已建立，分享連結給朋友！')}else{show('setup',false);show('lobby',true);notice('正在等待房主同步…');send('hello',{name:me});send('sync',{});setTimeout(()=>{if(!hostId)notice('尚未收到房主回應，請確認房號與房主是否在線',true)},4500)}}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')notice('即時連線失敗，請檢查 Supabase Realtime 設定',true)});}catch(e){notice(e.message,true);$('create').disabled=$('join').disabled=false}}
-$('create').onclick=()=>connect(true);$('join').onclick=()=>connect(false);$('copy').onclick=async()=>{await navigator.clipboard.writeText(location.origin+'/cat-sync/?room='+room);notice('已複製邀請連結')};$('start').onclick=()=>{if(host&&Object.keys(members).length>=2)newRound()};$('submit').onclick=()=>{let answer=clean($('answer').value);if(!answer)return notice('請先輸入答案',true);$('answer').value='';if(host){answers[myId]=answer;currentVersion++;if(Object.keys(answers).length===Object.keys(members).length)doReveal();else{broadcastState();render()}}else{answers[myId]=answer;render();send('answer',{answer})}};$('next').onclick=()=>{if(host)newRound()};$('finish').onclick=()=>{if(host)send('finish',{});finish()};
-$('download').onclick=()=>{let canvas=document.createElement('canvas'),ctx=canvas.getContext('2d'),W=1000,pad=58,lineH=36,lines=['貓貓腦迴路同步報告','共 '+history.length+' 題｜'+history.filter(h=>h.best>=2).length+' 題同詞相遇'];for(let [i,h] of history.entries()){lines.push('');lines.push('第 '+(i+1)+' 題：'+h.question);for(let a of h.answers)lines.push(a.name+'：'+a.answer)}let wrapped=[];for(let line of lines){let s='';for(let ch of line){if([...s].length>=29&&s){wrapped.push(s);s=''}s+=ch}wrapped.push(s)}canvas.width=W;canvas.height=Math.max(380,110+wrapped.length*lineH);ctx.fillStyle='#f8f4ff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#4d4089';ctx.font='bold 26px sans-serif';wrapped.forEach((l,i)=>ctx.fillText(l,pad,70+i*lineH));canvas.toBlob(blob=>{let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='貓貓腦迴路-'+room+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)},'image/png')};
+function submitChoice(index){if(revealed||!round||Date.now()>=deadline||Object.hasOwn(answers,myId))return;let answer=questionOptions[index];if(!answer)return;if(host){answers[myId]=answer;currentVersion++;if(Object.keys(answers).length>=Object.keys(members).length)doReveal();else{broadcastState();render()}}else{answers[myId]=answer;render();send('answer',{answer,round})}}
+function normalizeAnswer(v){return String(v??'').normalize('NFKC').trim().replace(/\s+/g,'').toLocaleLowerCase('zh-Hant')}
+function resultData(){
+  const names=[...new Set(history.flatMap(h=>h.answers.map(a=>a.name)))];
+  const pairs=[];
+  for(let i=0;i<names.length;i++)for(let j=i+1;j<names.length;j++){
+    let same=0,total=0;
+    for(const h of history){const a=h.answers.find(x=>x.name===names[i]),b=h.answers.find(x=>x.name===names[j]);
+      if(!a||!b||!normalizeAnswer(a.answer)||!normalizeAnswer(b.answer)||a.answer==='未作答'||b.answer==='未作答')continue;
+      total++;if(normalizeAnswer(a.answer)===normalizeAnswer(b.answer))same++;
+    }
+    if(total)pairs.push({a:names[i],b:names[j],same,total,rate:same/total});
+  }
+  const highest=pairs.length?Math.max(...pairs.map(p=>p.rate)):null;
+  const lowest=pairs.length?Math.min(...pairs.map(p=>p.rate)):null;
+  return {names,pairs,highest,lowest};
+}
+function pairText(p){return `${p.a} × ${p.b}　${Math.round(p.rate*100)}%（${p.same}/${p.total} 題）`}
+function finish(){
+  show('lobby',false);show('game',false);show('end',true);
+  $('summary').textContent='共 '+history.length+' 輪｜'+history.filter(h=>h.best>=2).length+' 輪出現同詞相遇';
+  const {names,pairs,highest,lowest}=resultData();
+  let html='<div class="result-scroll"><table class="result-table"><thead><tr><th></th>'+names.map(n=>'<th>'+safe(n)+'</th>').join('')+'</tr></thead><tbody>';
+  history.forEach((h,i)=>{const counts={};h.answers.forEach(a=>{let k=normalizeAnswer(a.answer);if(k&&a.answer!=='未作答')counts[k]=(counts[k]||0)+1});html+='<tr><td class="round-no">'+String(i+1).padStart(2,'0')+'</td>'+names.map(n=>{let a=h.answers.find(x=>x.name===n),v=a?.answer||'—',k=normalizeAnswer(v);return '<td class="'+(counts[k]>=2?'matched':'')+'">'+safe(v)+'</td>'}).join('')+'</tr>'});
+  $('history').innerHTML=html+'</tbody></table></div>';
+  const list=(items,low=false)=>items.length?items.map(p=>'<div class="pair-row '+(low?'low':'')+'"><span>'+safe(p.a)+' × '+safe(p.b)+'</span><strong>'+Math.round(p.rate*100)+'%（'+p.same+'/'+p.total+'）</strong></div>').join(''):'<p class="muted tiny">尚無可比較的共同作答紀錄</p>';
+  $('pairs').innerHTML='<h3>💜 最有默契的組合</h3>'+list(pairs.filter(p=>p.rate===highest))+'<h3>🌿 最沒默契的組合</h3>'+list(pairs.filter(p=>p.rate===lowest),true);
+}
+
+async function connect(isHost){me=clean($('nickname').value);if(!me)return notice('請先輸入暱稱',true);room=isHost?Array.from(crypto.getRandomValues(new Uint8Array(8)),x=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[x%32]).join(''):clean($('roomInput').value).toUpperCase();if(!roomRegex.test(room))return notice('請輸入有效的 8 位房號',true);$('create').disabled=$('join').disabled=true;try{let res=await fetch('/api/cat-config');if(!res.ok)throw Error('讀取設定失敗');let config=await res.json();if(!config.url)throw Error('缺少原本的 SUPABASE_URL 設定');if(!config.publishableKey || !(config.publishableKey.startsWith('sb_publishable_') || config.publishableKey.startsWith('eyJ')))throw Error('請在 Vercel 設定 SUPABASE_PUBLISHABLE_KEY（公開金鑰）');client=supabase.createClient(config.url,config.publishableKey,{realtime:{params:{eventsPerSecond:10}}});host=isHost;hostId=host?myId:'';channel=client.channel('cat-sync-'+room,{config:{broadcast:{self:false},presence:{key:myId}}});channel.on('broadcast',{event:'hello'},({payload:p})=>{if(host){if(!members[p.from]){members[p.from]={id:p.from,name:clean(p.name)};currentVersion++;broadcastState();render()}else broadcastState()}}).on('broadcast',{event:'state'},({payload:p})=>{if(!host&&!hostId)hostId=p.hostId;applyState(p)}).on('broadcast',{event:'answer'},({payload:p})=>{if(!host||revealed||!round||Date.now()>=deadline||p.round!==round||!members[p.from]||Object.hasOwn(answers,p.from)||!questionOptions.includes(p.answer))return;answers[p.from]=p.answer;currentVersion++;if(Object.keys(answers).length>=Object.keys(members).length)doReveal();else{broadcastState();render()}}).on('broadcast',{event:'finish'},()=>finish()).on('broadcast',{event:'sync'},()=>{if(host)broadcastState()}).on('presence',{event:'leave'},({leftPresences})=>{if(!host)return;for(let p of leftPresences){if(p.user_id&&p.user_id!==myId)delete members[p.user_id]}currentVersion++;broadcastState();render()}).subscribe(async status=>{if(status==='SUBSCRIBED'&&!connected){connected=true;await channel.track({user_id:myId,name:me});if(host){members[myId]={id:myId,name:me};render();notice('房間已建立，分享連結給朋友！')}else{show('setup',false);show('lobby',true);notice('正在等待房主同步…');send('hello',{name:me});send('sync',{});setTimeout(()=>{if(!hostId)notice('尚未收到房主回應，請確認房號與房主是否在線',true)},4500)}}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')notice('即時連線失敗，請檢查 Supabase Realtime 設定',true)});}catch(e){notice(e.message,true);$('create').disabled=$('join').disabled=false}}
+$('create').onclick=()=>connect(true);$('join').onclick=()=>connect(false);$('copy').onclick=async()=>{await navigator.clipboard.writeText(location.origin+'/cat-sync/?room='+room);notice('已複製邀請連結')};$('totalRounds').onchange=()=>{if(host&&!round){totalRounds=Number($('totalRounds').value);currentVersion++;broadcastState();render()}};$('start').onclick=()=>{if(host&&Object.keys(members).length>=2){totalRounds=Number($('totalRounds').value);newRound()}};$('next').onclick=()=>{if(host)newRound()};$('finish').onclick=()=>{if(host){send('finish',{});finish()}};timerHandle=setInterval(updateTimer,200);
+$('download').onclick=()=>{
+  const {names,pairs,highest,lowest}=resultData();
+  const W=Math.max(850,170+names.length*180),scale=2,pad=45,numberW=48,colW=(W-pad*2-numberW)/Math.max(1,names.length);
+  const ctx=document.createElement('canvas').getContext('2d');
+  const measure=(txt,maxWidth,font)=>{ctx.font=font;const chars=Array.from(String(txt));let lines=[''];for(const ch of chars){let last=lines.length-1;if(ctx.measureText(lines[last]+ch).width>maxWidth&&lines[last])lines.push(ch);else lines[last]+=ch}return lines};
+  const rowHeights=history.map(h=>Math.max(74,...names.map(n=>{let v=h.answers.find(x=>x.name===n)?.answer||'—';return 24+measure(v,colW-24,'bold 21px sans-serif').length*29})));
+  const tops=[];let y=195;for(const h of rowHeights){tops.push(y);y+=h+10}
+  const highs=pairs.filter(p=>p.rate===highest),lows=pairs.filter(p=>p.rate===lowest);
+  const pairLine=(p)=>`${p.a} × ${p.b}　${Math.round(p.rate*100)}%（${p.same}/${p.total} 題）`;
+  const pairRows=[...highs.map(p=>({text:pairLine(p),low:false})),...lows.map(p=>({text:pairLine(p),low:true}))];
+  const pairY=y+65,footerY=pairY+90+pairRows.length*57+80;
+  const H=Math.max(540,footerY);ctx.canvas.width=W*scale;ctx.canvas.height=H*scale;ctx.scale(scale,scale);
+  ctx.fillStyle='#fbfafc';ctx.fillRect(0,0,W,H);
+  function rect(x,y,w,h,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
+  function text(t,x,y,font,color,align='left'){ctx.font=font;ctx.fillStyle=color;ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillText(t,x,y)}
+  function wrapped(t,x,cy,width,font,color,lineHeight){let ls=measure(t,width,font),start=cy-(ls.length-1)*lineHeight/2;ls.forEach((line,i)=>text(line,x,start+i*lineHeight,font,color,'center'))}
+  text('我們的腦迴路',pad,62,'bold 36px sans-serif','#3f3a4c');text('共 '+history.length+' 輪 · '+history.filter(h=>h.best>=2).length+' 輪同詞相遇',W-pad,64,'19px sans-serif','#aaa3b2','right');
+  names.forEach((n,i)=>wrapped(n,pad+numberW+(i+.5)*colW,142,colW-12,'bold 20px sans-serif','#8d8699',26));
+  history.forEach((h,ri)=>{const counts={};h.answers.forEach(a=>{let k=normalizeAnswer(a.answer);if(k&&a.answer!=='未作答')counts[k]=(counts[k]||0)+1});const top=tops[ri],height=rowHeights[ri];text(String(ri+1).padStart(2,'0'),pad+5,top+height/2,'19px sans-serif','#a9a1b4');names.forEach((n,i)=>{let v=h.answers.find(x=>x.name===n)?.answer||'—',k=normalizeAnswer(v),x=pad+numberW+i*colW+5,w=colW-10;rect(x,top,w,height,18,i%2===0?'#eee7f7':'#def2ec');if(counts[k]>=2){ctx.strokeStyle='#b99edc';ctx.lineWidth=3;ctx.beginPath();ctx.roundRect(x+1.5,top+1.5,w-3,height-3,17);ctx.stroke()}wrapped(v,x+w/2,top+height/2,w-24,'bold 21px sans-serif',i%2===0?'#765c98':'#548e7e',29)})});
+  ctx.fillStyle='#e6e0ec';ctx.fillRect(pad,pairY-24,W-pad*2,1);
+  let py=pairY;text('最有默契的成員組合',pad,py,'bold 24px sans-serif','#67518a');py+=39;
+  if(!highs.length){text('尚無共同作答紀錄',pad+10,py,'19px sans-serif','#999');py+=48}else highs.forEach(p=>{rect(pad,py-18,W-pad*2,46,12,'#eee8f8');text(pairLine(p),pad+16,py+5,'19px sans-serif','#725991');py+=57});
+  py+=15;text('最沒默契的成員組合',pad,py,'bold 24px sans-serif','#548b7c');py+=39;
+  if(!lows.length){text('尚無共同作答紀錄',pad+10,py,'19px sans-serif','#999');py+=48}else lows.forEach(p=>{rect(pad,py-18,W-pad*2,46,12,'#e1f2ed');text(pairLine(p),pad+16,py+5,'19px sans-serif','#4d8676');py+=57});
+  text('默契率＝同詞題數 ÷ 共同作答題數 · 同分並列',pad,H-35,'16px sans-serif','#aaa3b2');
+  ctx.canvas.toBlob(blob=>{if(!blob)return notice('圖片產生失敗',true);const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download='貓貓腦迴路-'+room+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000)},'image/png');
+};
+
 const urlRoom=new URLSearchParams(location.search).get('room');if(urlRoom){$('roomInput').value=urlRoom.toUpperCase();notice('輸入暱稱後，按「加入房間」')}
 </script></body></html>
